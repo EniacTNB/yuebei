@@ -1,0 +1,33 @@
+# FastAPI核心
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# 数据库
+pymongo==4.5.0
+redis==5.0.1
+motor==3.3.2  # 异步MongoDB驱动
+
+# 数据验证
+pydantic==2.5.0
+pydantic-settings==2.0.3
+
+# 工具库
+python-dotenv==1.0.0
+httpx==0.25.1  # 调用地图API
+geopy==2.4.0  # 地理位置计算
+numpy==1.24.3  # 数学计算
+
+# WebSocket
+python-socketio==5.10.0
+
+# 安全
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# CORS
+fastapi-cors==0.0.6
+
+# 开发工具
+pytest==7.4.3
+pytest-asyncio==0.21.1

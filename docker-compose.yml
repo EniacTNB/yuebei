@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # MongoDB数据库
+  mongodb:
+    image: mongo:6.0
+    container_name: yuebei-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: yuebei123
+      MONGO_INITDB_DATABASE: yuebei
+    volumes:
+      - mongodb_data:/data/db
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: yuebei-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+  # Python FastAPI后端
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: yuebei-backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - MONGODB_URL=mongodb://admin:yuebei123@mongodb:27017
+      - REDIS_URL=redis://redis:6379
+      - TENCENT_MAP_KEY=${TENCENT_MAP_KEY}
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./server:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+volumes:
+  mongodb_data:
+  redis_data:

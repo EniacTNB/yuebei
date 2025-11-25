@@ -1,0 +1,69 @@
+<!--index.wxml-->
+<view class="container">
+  <!-- Logo和标题 -->
+  <view class="header">
+    <view class="logo">约呗</view>
+    <view class="subtitle">找到最方便的聚会地点</view>
+  </view>
+  
+  <!-- 快速操作区 -->
+  <view class="action-area">
+    <button class="btn-primary" bindtap="handleCreate">
+      <text class="btn-icon">📍</text>
+      <text>发起新聚会</text>
+    </button>
+    
+    <view class="divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">或</text>
+      <view class="divider-line"></view>
+    </view>
+    
+    <view class="input-group">
+      <input 
+        class="input-code" 
+        placeholder="输入6位邀请码"
+        maxlength="6"
+        value="{{inviteCode}}"
+        bindinput="onCodeInput"
+      />
+      <button class="btn-join" bindtap="handleJoinByCode">加入</button>
+    </view>
+  </view>
+  
+  <!-- 最近的聚会（本地缓存） -->
+  <view class="recent-section" wx:if="{{recentGatherings.length > 0}}">
+    <view class="section-title">最近的聚会</view>
+    <view class="recent-list">
+      <view class="recent-item card" wx:for="{{recentGatherings}}" wx:key="id" bindtap="handleRejoin" data-id="{{item.id}}">
+        <view class="recent-header">
+          <text class="recent-type">{{item.typeText}}</text>
+          <text class="recent-time">{{item.timeText}}</text>
+        </view>
+        <view class="recent-info">
+          <text class="recent-members">{{item.memberCount}}人已加入</text>
+          <text class="recent-status">{{item.statusText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 使用说明 -->
+  <view class="tips-section">
+    <view class="tips-title">如何使用？</view>
+    <view class="tips-list">
+      <view class="tips-item">
+        <text class="tips-num">1</text>
+        <text class="tips-text">发起聚会，选择您的位置</text>
+      </view>
+      <view class="tips-item">
+        <text class="tips-num">2</text>
+        <text class="tips-text">分享给朋友，收集大家位置</text>
+      </view>
+      <view class="tips-item">
+        <text class="tips-num">3</text>
+        <text class="tips-text">智能推荐最方便的地点</text>
+      </view>
+    </view>
+  </view>
+</view>

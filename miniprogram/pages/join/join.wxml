@@ -1,0 +1,81 @@
+<!--pages/join/join.wxml-->
+<view class="container">
+  <!-- 聚会信息 -->
+  <view class="gathering-info card" wx:if="{{gathering}}">
+    <view class="info-header">
+      <text class="info-title">邀请码：{{code}}</text>
+      <text class="info-type">{{gathering.type === 'meal' ? '🍜 聚餐' : gathering.type === 'coffee' ? '☕ 咖啡' : '🎉 聚会'}}</text>
+    </view>
+    <view class="info-content">
+      <text class="info-text">已有 {{gathering.participants.length}} 人加入</text>
+    </view>
+  </view>
+  
+  <!-- 设置昵称 -->
+  <view class="section">
+    <view class="section-title">您的昵称（可选）</view>
+    <input 
+      class="input-nickname" 
+      placeholder="输入昵称，不填则显示匿名用户"
+      value="{{nickname}}"
+      bindinput="inputNickname"
+    />
+  </view>
+  
+  <!-- 设置位置 -->
+  <view class="section">
+    <view class="section-title">您的位置 *</view>
+    <view class="location-box card">
+      <view class="location-content">
+        <view wx:if="{{locationAddress}}" class="location-info">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{locationAddress}}</text>
+        </view>
+        <view wx:else class="location-empty">
+          <text>请设置您的位置</text>
+        </view>
+      </view>
+      
+      <view class="location-actions">
+        <button class="btn-location" bindtap="getCurrentLocation">
+          <text class="btn-icon">📍</text>
+          <text>当前位置</text>
+        </button>
+        <button class="btn-location" bindtap="chooseLocation">
+          <text class="btn-icon">🗺️</text>
+          <text>选择地点</text>
+        </button>
+        <button class="btn-location" bindtap="inputAddress">
+          <text class="btn-icon">✏️</text>
+          <text>手动输入</text>
+        </button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 当前参与者 -->
+  <view class="section" wx:if="{{gathering && gathering.participants.length > 0}}">
+    <view class="section-title">已加入的朋友</view>
+    <view class="participant-list">
+      <view class="participant-item" wx:for="{{gathering.participants}}" wx:key="temp_id">
+        <text class="participant-name">{{item.nickname || '匿名用户'}}</text>
+        <text class="participant-location">{{item.location ? item.location.address : '未设置位置'}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 加入按钮 -->
+  <view class="bottom-action">
+    <button 
+      class="btn-primary btn-join" 
+      bindtap="joinGathering"
+      disabled="{{!myLocation || isJoining}}"
+    >
+      {{isJoining ? '加入中...' : '加入聚会'}}
+    </button>
+    
+    <view class="tips">
+      <text>加入后可以查看智能推荐的聚会地点</text>
+    </view>
+  </view>
+</view>

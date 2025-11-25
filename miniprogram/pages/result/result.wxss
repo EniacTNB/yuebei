@@ -1,0 +1,272 @@
+/* pages/result/result.wxss */
+.container {
+  padding: 30rpx;
+  background: #f8f8f8;
+  min-height: 100vh;
+  padding-bottom: 140rpx;
+}
+
+/* 邀请码卡片 */
+.code-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 20rpx;
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  text-align: center;
+}
+
+.code-title {
+  font-size: 30rpx;
+  opacity: 0.9;
+  margin-bottom: 20rpx;
+}
+
+.code-value {
+  font-size: 72rpx;
+  font-weight: bold;
+  letter-spacing: 12rpx;
+  margin-bottom: 30rpx;
+}
+
+.code-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-action {
+  flex: 1;
+  height: 72rpx;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 36rpx;
+  font-size: 28rpx;
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-share {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 12rpx 24rpx;
+  background: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #666;
+  border: 1rpx solid #e0e0e0;
+}
+
+.refresh-icon {
+  font-size: 24rpx;
+}
+
+/* 参与者列表 */
+.participant-scroll {
+  margin-bottom: 40rpx;
+}
+
+.participant-list-h {
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 10rpx;
+}
+
+.participant-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #fff;
+  padding: 20rpx 24rpx;
+  border-radius: 16rpx;
+  min-width: 180rpx;
+}
+
+.participant-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.participant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.participant-name {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.participant-addr {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 推荐列表 */
+.recommend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.recommend-item {
+  padding: 30rpx;
+  transition: transform 0.2s;
+}
+
+.recommend-item:active {
+  transform: scale(0.98);
+}
+
+.recommend-header {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.recommend-rank {
+  width: 60rpx;
+  height: 60rpx;
+  background: linear-gradient(135deg, #FF6B6B 0%, #FF8787 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.recommend-content {
+  flex: 1;
+}
+
+.recommend-name {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.recommend-address {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.recommend-stats {
+  display: flex;
+  gap: 40rpx;
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: #f8f8f8;
+  border-radius: 12rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  align-items: center;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.stat-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.recommend-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20rpx;
+}
+
+.btn-navigate {
+  padding: 16rpx 32rpx;
+  background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
+  color: #fff;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+}
+
+/* 加载和空状态 */
+.loading-box, .empty-box {
+  padding: 100rpx 40rpx;
+  text-align: center;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.empty-hint {
+  font-size: 28rpx;
+  color: #999;
+  display: block;
+}
+
+/* 底部操作栏 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  display: flex;
+  gap: 20rpx;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.btn-home, .btn-share {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-home {
+  background: #fff;
+  color: #666;
+  border: 2rpx solid #e0e0e0;
+}
+
+.btn-share {
+  background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
+  color: #fff;
+}

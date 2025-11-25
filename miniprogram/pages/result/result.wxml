@@ -1,0 +1,99 @@
+<!--pages/result/result.wxml-->
+<view class="container">
+  <!-- 邀请码卡片 -->
+  <view class="code-card" wx:if="{{isCreator}}">
+    <view class="code-title">邀请码</view>
+    <view class="code-value">{{code}}</view>
+    <view class="code-actions">
+      <button class="btn-action" bindtap="copyCode">复制邀请码</button>
+      <button class="btn-action btn-share" open-type="share">分享给朋友</button>
+    </view>
+  </view>
+  
+  <!-- 参与者信息 -->
+  <view class="section" wx:if="{{gathering}}">
+    <view class="section-header">
+      <text class="section-title">参与者（{{gathering.participants.length}}人）</text>
+      <button class="btn-refresh" bindtap="refreshRecommendations">
+        <text class="refresh-icon">🔄</text>
+        <text>刷新推荐</text>
+      </button>
+    </view>
+    
+    <scroll-view class="participant-scroll" scroll-x>
+      <view class="participant-list-h">
+        <view class="participant-card" wx:for="{{gathering.participants}}" wx:key="temp_id">
+          <view class="participant-avatar">{{item.nickname[0] || '匿'}}</view>
+          <view class="participant-info">
+            <text class="participant-name">{{item.nickname || '匿名'}}</text>
+            <text class="participant-addr">{{item.location ? '已定位' : '未定位'}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 推荐结果 -->
+  <view class="section">
+    <view class="section-title">推荐地点</view>
+    
+    <!-- 加载中 -->
+    <view wx:if="{{isLoading}}" class="loading-box">
+      <view class="loading">
+        <text class="loading-text">正在计算最佳地点...</text>
+      </view>
+    </view>
+    
+    <!-- 推荐列表 -->
+    <view wx:elif="{{recommendations.length > 0}}" class="recommend-list">
+      <view 
+        class="recommend-item card" 
+        wx:for="{{recommendations}}" 
+        wx:key="id"
+        bindtap="viewDetail"
+        data-index="{{index}}"
+      >
+        <view class="recommend-header">
+          <view class="recommend-rank">{{index + 1}}</view>
+          <view class="recommend-content">
+            <view class="recommend-name">{{item.name}}</view>
+            <view class="recommend-address">{{item.address}}</view>
+          </view>
+        </view>
+        
+        <view class="recommend-stats">
+          <view class="stat-item">
+            <text class="stat-label">平均通勤</text>
+            <text class="stat-value">{{item.avg_travel_time}}分钟</text>
+          </view>
+          <view class="stat-item" wx:if="{{item.rating}}">
+            <text class="stat-label">评分</text>
+            <text class="stat-value">{{item.rating}}分</text>
+          </view>
+          <view class="stat-item">
+            <text class="stat-label">匹配度</text>
+            <text class="stat-value">{{item.score}}%</text>
+          </view>
+        </view>
+        
+        <view class="recommend-actions">
+          <button class="btn-navigate" catchtap="navigate" data-place="{{item}}">
+            <text>导航</text>
+          </button>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 无推荐 -->
+    <view wx:else class="empty-box">
+      <text class="empty-text">需要至少2个人的位置信息才能推荐</text>
+      <text class="empty-hint">请等待更多朋友加入并设置位置</text>
+    </view>
+  </view>
+  
+  <!-- 底部操作 -->
+  <view class="bottom-bar">
+    <button class="btn-home" bindtap="goHome">返回首页</button>
+    <button class="btn-share" open-type="share">邀请朋友</button>
+  </view>
+</view>

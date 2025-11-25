@@ -1,0 +1,64 @@
+<!--pages/create/create.wxml-->
+<view class="container">
+  <!-- 步骤1：选择类型 -->
+  <view class="section">
+    <view class="section-title">选择聚会类型</view>
+    <view class="type-grid">
+      <view 
+        class="type-item {{item.checked ? 'active' : ''}}" 
+        wx:for="{{types}}" 
+        wx:key="value"
+        bindtap="selectType"
+        data-value="{{item.value}}"
+      >
+        <text class="type-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 步骤2：设置位置 -->
+  <view class="section">
+    <view class="section-title">您的位置（可选）</view>
+    <view class="location-box card">
+      <view class="location-content">
+        <view wx:if="{{locationAddress}}" class="location-info">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{locationAddress}}</text>
+        </view>
+        <view wx:else class="location-empty">
+          <text>添加您的位置，让推荐更精准</text>
+        </view>
+      </view>
+      
+      <view class="location-actions">
+        <button class="btn-location" bindtap="getCurrentLocation">
+          <text class="btn-icon">📍</text>
+          <text>当前位置</text>
+        </button>
+        <button class="btn-location" bindtap="chooseLocation">
+          <text class="btn-icon">🗺️</text>
+          <text>选择地点</text>
+        </button>
+        <button class="btn-location" bindtap="inputAddress">
+          <text class="btn-icon">✏️</text>
+          <text>手动输入</text>
+        </button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 创建按钮 -->
+  <view class="bottom-action">
+    <button 
+      class="btn-primary btn-create" 
+      bindtap="createGathering"
+      disabled="{{isCreating}}"
+    >
+      {{isCreating ? '创建中...' : '创建聚会并获取邀请码'}}
+    </button>
+    
+    <view class="tips">
+      <text>创建后将生成6位邀请码，分享给朋友即可加入</text>
+    </view>
+  </view>
+</view>

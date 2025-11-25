@@ -1,0 +1,203 @@
+/**index.wxss**/
+.container {
+  padding: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+}
+
+/* 头部 */
+.header {
+  padding: 80rpx 40rpx 60rpx;
+  text-align: center;
+  color: #fff;
+}
+
+.logo {
+  font-size: 72rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  text-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+  font-size: 32rpx;
+  opacity: 0.9;
+}
+
+/* 操作区 */
+.action-area {
+  background: #fff;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 60rpx 40rpx;
+  min-height: 60vh;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.btn-icon {
+  font-size: 36rpx;
+}
+
+/* 分割线 */
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 50rpx 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1rpx;
+  background: #e0e0e0;
+}
+
+.divider-text {
+  padding: 0 30rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 输入组 */
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: #f5f5f5;
+  border-radius: 48rpx;
+  padding: 8rpx;
+}
+
+.input-code {
+  flex: 1;
+  height: 80rpx;
+  padding: 0 30rpx;
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 8rpx;
+}
+
+.btn-join {
+  height: 80rpx;
+  padding: 0 40rpx;
+  background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
+  color: #fff;
+  border-radius: 40rpx;
+  font-size: 30rpx;
+  line-height: 80rpx;
+}
+
+/* 最近的聚会 */
+.recent-section {
+  margin-top: 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.recent-item {
+  padding: 24rpx;
+  transition: transform 0.2s;
+}
+
+.recent-item:active {
+  transform: scale(0.98);
+}
+
+.recent-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.recent-type {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.recent-time {
+  font-size: 26rpx;
+  color: #999;
+}
+
+.recent-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.recent-members {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.recent-status {
+  font-size: 24rpx;
+  padding: 4rpx 16rpx;
+  background: #f0f0f0;
+  color: #666;
+  border-radius: 20rpx;
+}
+
+/* 使用说明 */
+.tips-section {
+  margin-top: 60rpx;
+  padding: 40rpx;
+  background: #f9f9f9;
+  border-radius: 20rpx;
+}
+
+.tips-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 30rpx;
+}
+
+.tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.tips-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.tips-num {
+  width: 48rpx;
+  height: 48rpx;
+  background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: bold;
+}
+
+.tips-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #666;
+}
