@@ -41,7 +41,7 @@ class TencentMapService(MapService):
         签名算法:
         1. 对参数按key进行字典升序排序
         2. 拼接请求路径和参数: /path?key1=value1&key2=value2&key=KEY
-        3. 在末尾加上SK: /path?key1=value1&key2=value2&key=KEY&SK
+        3. 在末尾加上SK: /path?key1=value1&key2=value2&key=KEYSK值（注意：SK直接拼接，不加&）
         4. 计算MD5值作为签名
 
         Args:
@@ -57,14 +57,21 @@ class TencentMapService(MapService):
         # 1. 对参数按key排序
         sorted_params = sorted(params.items(), key=lambda x: x[0])
 
-        # 2. 拼接参数字符串
-        param_str = urlencode(sorted_params)
+        # 2. 手动拼接参数字符串（不进行urlencode，使用原始值）
+        param_pairs = []
+        for key, value in sorted_params:
+            param_pairs.append(f"{key}={value}")
+        param_str = "&".join(param_pairs)
+        
+        print(f"参数字符串: {param_str}")
 
-        # 3. 拼接完整字符串: path?params + SK
+        # 3. 拼接完整字符串: path?params+SK（SK直接拼接，不加&符号）
         sign_str = f"{path}?{param_str}{self.sk}"
+        print(f"签名字符串: {sign_str}")
 
-        # 4. 计算MD5
+        # 4. 计算MD5（小写）
         signature = hashlib.md5(sign_str.encode('utf-8')).hexdigest()
+        print(f"计算得到签名: {signature}")
 
         logger.debug(f"Sign string: {sign_str}")
         logger.debug(f"Signature: {signature}")
@@ -106,6 +113,7 @@ class TencentMapService(MapService):
             response = await self.client.get(url, params=params)
             if response.status_code == 200:
                 data = response.json()
+                print(data)
                 if data.get("status") == 0:
                     places = []
                     for item in data.get("data", []):
