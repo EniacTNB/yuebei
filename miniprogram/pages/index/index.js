@@ -4,7 +4,9 @@ const app = getApp()
 Page({
   data: {
     inviteCode: '',
-    recentGatherings: []
+    recentGatherings: [],
+    showHelpModal: false,
+    showRecentModal: false
   },
 
   onLoad() {
@@ -78,8 +80,10 @@ Page({
   handleRejoin(e) {
     const { id } = e.currentTarget.dataset
     const gathering = this.data.recentGatherings.find(g => g.id === id)
-    
+
     if (gathering && gathering.code) {
+      // 关闭弹窗
+      this.closeRecentModal()
       // 跳转到结果页面
       wx.navigateTo({
         url: '/pages/result/result?code=' + gathering.code
@@ -148,6 +152,39 @@ Page({
       'cancelled': '已取消'
     }
     return statusMap[status] || '未知'
+  },
+
+  // 打开最近聚会弹窗
+  openRecentModal() {
+    this.setData({
+      showRecentModal: true
+    })
+  },
+
+  // 关闭最近聚会弹窗
+  closeRecentModal() {
+    this.setData({
+      showRecentModal: false
+    })
+  },
+
+  // 打开使用说明弹窗
+  openHelpModal() {
+    this.setData({
+      showHelpModal: true
+    })
+  },
+
+  // 关闭使用说明弹窗
+  closeHelpModal() {
+    this.setData({
+      showHelpModal: false
+    })
+  },
+
+  // 阻止遮罩下的页面滚动
+  preventTouchMove() {
+    return false
   },
 
   // 分享

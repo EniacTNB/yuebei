@@ -14,80 +14,178 @@
   <view class="section" wx:if="{{gathering}}">
     <view class="section-header">
       <text class="section-title">参与者（{{gathering.participants.length}}人）</text>
-      <button class="btn-refresh" bindtap="refreshRecommendations">
-        <text class="refresh-icon">🔄</text>
-        <text>刷新推荐</text>
-      </button>
+      <view class="section-actions">
+        <button class="btn-add-participant" bindtap="showAddParticipant">
+          <text class="btn-icon">➕</text>
+          <text>添加</text>
+        </button>
+        <button class="btn-refresh" bindtap="refreshRecommendations">
+          <text class="refresh-icon">🔄</text>
+          <text>刷新</text>
+        </button>
+      </view>
     </view>
-    
-    <scroll-view class="participant-scroll" scroll-x>
+
+    <scroll-view
+      class="participant-scroll"
+      scroll-x
+      enable-flex
+      show-scrollbar="{{false}}"
+      scroll-with-animation>
       <view class="participant-list-h">
         <view class="participant-card" wx:for="{{gathering.participants}}" wx:key="temp_id">
           <view class="participant-avatar">{{item.nickname[0] || '匿'}}</view>
           <view class="participant-info">
             <text class="participant-name">{{item.nickname || '匿名'}}</text>
-            <text class="participant-addr">{{item.location ? '已定位' : '未定位'}}</text>
+            <text class="participant-addr">{{item.location ? item.location.address : '未定位'}}</text>
+          </view>
+          <view class="participant-delete" bindtap="deleteParticipant" data-id="{{item.temp_id}}">
+            <text class="delete-icon">✕</text>
           </view>
         </view>
       </view>
     </scroll-view>
   </view>
   
-  <!-- 推荐结果 -->
+  <!-- 单人模式提示 -->
+  <view class="invite-banner" wx:if="{{isSinglePerson}}">
+    <view class="invite-icon">👥</view>
+    <view class="invite-content">
+      <view class="invite-title">邀请更多好友加入</view>
+      <view class="invite-text">当前只有您一个人，邀请好友加入后即可智能推荐最佳聚会地点</view>
+    </view>
+  </view>
+
+  <!-- 推荐结果 / 附近地点 -->
   <view class="section">
-    <view class="section-title">推荐地点</view>
-    
-    <!-- 加载中 -->
-    <view wx:if="{{isLoading}}" class="loading-box">
-      <view class="loading">
-        <text class="loading-text">正在计算最佳地点...</text>
+    <!-- 单人模式：显示附近地点 -->
+    <view wx:if="{{isSinglePerson}}">
+      <view class="section-title">
+        <text>您附近的地点</text>
+        <view class="section-subtitle">邀请好友加入后可获得更智能的推荐</view>
       </view>
-    </view>
-    
-    <!-- 推荐列表 -->
-    <view wx:elif="{{recommendations.length > 0}}" class="recommend-list">
-      <view 
-        class="recommend-item card" 
-        wx:for="{{recommendations}}" 
-        wx:key="id"
-        bindtap="viewDetail"
-        data-index="{{index}}"
-      >
-        <view class="recommend-header">
-          <view class="recommend-rank">{{index + 1}}</view>
-          <view class="recommend-content">
-            <view class="recommend-name">{{item.name}}</view>
-            <view class="recommend-address">{{item.address}}</view>
-          </view>
-        </view>
-        
-        <view class="recommend-stats">
-          <view class="stat-item">
-            <text class="stat-label">平均通勤</text>
-            <text class="stat-value">{{item.avg_travel_time}}分钟</text>
-          </view>
-          <view class="stat-item" wx:if="{{item.rating}}">
-            <text class="stat-label">评分</text>
-            <text class="stat-value">{{item.rating}}分</text>
-          </view>
-          <view class="stat-item">
-            <text class="stat-label">匹配度</text>
-            <text class="stat-value">{{item.score}}%</text>
-          </view>
-        </view>
-        
-        <view class="recommend-actions">
-          <button class="btn-navigate" catchtap="navigate" data-place="{{item}}">
-            <text>导航</text>
-          </button>
+
+      <!-- 加载中 -->
+      <view wx:if="{{isLoading}}" class="loading-box">
+        <view class="loading">
+          <text class="loading-text">正在搜索附近地点...</text>
         </view>
       </view>
+
+      <!-- 附近地点列表 -->
+      <view wx:elif="{{nearbyPlaces.length > 0}}" class="nearby-list">
+        <view
+          class="nearby-item card"
+          wx:for="{{nearbyPlaces}}"
+          wx:key="id"
+          bindtap="viewNearbyDetail"
+          data-index="{{index}}"
+        >
+          <view class="nearby-header">
+            <view class="nearby-icon">📍</view>
+            <view class="nearby-content">
+              <view class="nearby-name">{{item.name}}</view>
+              <view class="nearby-address">{{item.address}}</view>
+            </view>
+          </view>
+
+          <view class="nearby-info">
+            <view class="nearby-tag" wx:if="{{item.distance}}">
+              <text>距离 {{item.distance}}米</text>
+            </view>
+            <view class="nearby-tag" wx:if="{{item.rating}}">
+              <text>⭐ {{item.rating}}分</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 无附近地点 -->
+      <view wx:else class="empty-box">
+        <text class="empty-text">暂无附近地点</text>
+        <text class="empty-hint">请稍后重试</text>
+      </view>
     </view>
-    
-    <!-- 无推荐 -->
-    <view wx:else class="empty-box">
-      <text class="empty-text">需要至少2个人的位置信息才能推荐</text>
-      <text class="empty-hint">请等待更多朋友加入并设置位置</text>
+
+    <!-- 多人模式：显示智能推荐 -->
+    <view wx:else>
+      <view class="section-header">
+        <view class="section-title">智能推荐地点</view>
+        <button class="btn-add-place" bindtap="showAddPlace">
+          <text class="btn-icon">📍</text>
+          <text>添加地点</text>
+        </button>
+      </view>
+
+      <!-- 加载中 -->
+      <view wx:if="{{isLoading}}" class="loading-box">
+        <view class="loading">
+          <text class="loading-text">正在计算最佳地点...</text>
+        </view>
+      </view>
+
+      <!-- 推荐列表 -->
+      <view wx:elif="{{recommendations.length > 0}}" class="recommend-list">
+        <view
+          class="recommend-item card"
+          wx:for="{{recommendations}}"
+          wx:key="id"
+        >
+          <view class="recommend-header">
+            <view class="recommend-rank">{{index + 1}}</view>
+            <view class="recommend-content" bindtap="viewDetail" data-index="{{index}}">
+              <view class="recommend-name">{{item.name}}</view>
+              <view class="recommend-address">{{item.address}}</view>
+            </view>
+            <view class="recommend-delete" bindtap="deletePlace" data-id="{{item.id}}">
+              <text class="delete-icon">✕</text>
+            </view>
+          </view>
+
+          <view class="recommend-stats">
+            <view class="stat-item">
+              <text class="stat-label">平均通勤</text>
+              <text class="stat-value">{{item.avg_travel_time}}分钟</text>
+            </view>
+            <view class="stat-item" wx:if="{{item.rating}}">
+              <text class="stat-label">评分</text>
+              <text class="stat-value">{{item.rating}}分</text>
+            </view>
+            <view class="stat-item">
+              <text class="stat-label">匹配度</text>
+              <text class="stat-value">{{item.score}}%</text>
+            </view>
+          </view>
+
+          <!-- 各参与者距离信息 -->
+          <view class="participant-distances" wx:if="{{item.participant_distances && item.participant_distances.length > 0}}">
+            <view class="distances-title">各参与者距离</view>
+            <scroll-view class="distances-scroll" scroll-x show-scrollbar="{{false}}" enable-flex scroll-with-animation>
+              <view class="distances-list">
+                <view class="distance-item" wx:for="{{item.participant_distances}}" wx:key="temp_id" wx:for-item="dist">
+                  <view class="distance-avatar">{{dist.nickname[0] || '匿'}}</view>
+                  <view class="distance-info">
+                    <text class="distance-name">{{dist.nickname}}</text>
+                    <text class="distance-value">{{dist.distance}}km · {{dist.travel_time}}分钟</text>
+                  </view>
+                </view>
+              </view>
+            </scroll-view>
+          </view>
+
+          <view class="recommend-actions">
+            <button class="btn-navigate" catchtap="navigate" data-place="{{item}}">
+              <text>导航</text>
+            </button>
+          </view>
+        </view>
+      </view>
+
+      <!-- 无推荐 -->
+      <view wx:else class="empty-box">
+        <text class="empty-text">暂无推荐地点</text>
+        <text class="empty-hint">点击上方"添加地点"手动添加候选地点</text>
+      </view>
     </view>
   </view>
   
@@ -95,5 +193,117 @@
   <view class="bottom-bar">
     <button class="btn-home" bindtap="goHome">返回首页</button>
     <button class="btn-share" open-type="share">邀请朋友</button>
+  </view>
+</view>
+
+<!-- 添加参与者弹窗 -->
+<view class="modal-mask {{showAddParticipantModal ? 'show' : ''}}"
+      wx:if="{{showAddParticipantModal}}"
+      bindtap="hideAddParticipant"
+      catchtouchmove="preventTouchMove">
+</view>
+
+<view class="form-modal {{showAddParticipantModal ? 'show' : ''}}"
+      wx:if="{{showAddParticipantModal}}"
+      catchtouchmove="preventTouchMove">
+  <view class="modal-header">
+    <text class="modal-title">添加参与者</text>
+    <view class="modal-close" bindtap="hideAddParticipant">
+      <text class="modal-close-icon">✕</text>
+    </view>
+  </view>
+
+  <view class="modal-body">
+    <view class="form-item">
+      <view class="form-label">昵称</view>
+      <input class="form-input"
+             placeholder="请输入昵称"
+             value="{{newParticipant.nickname}}"
+             bindinput="onParticipantNicknameInput"/>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">位置</view>
+      <view class="form-location" bindtap="chooseParticipantLocation">
+        <text class="location-text">{{newParticipant.location ? newParticipant.location.address : '点击选择位置'}}</text>
+        <text class="location-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">交通方式</view>
+      <view class="transport-options">
+        <view class="transport-option {{newParticipant.transport_mode === 'driving' ? 'active' : ''}}"
+              bindtap="selectTransport"
+              data-mode="driving">
+          <text>🚗 驾车</text>
+        </view>
+        <view class="transport-option {{newParticipant.transport_mode === 'transit' ? 'active' : ''}}"
+              bindtap="selectTransport"
+              data-mode="transit">
+          <text>🚌 公交</text>
+        </view>
+        <view class="transport-option {{newParticipant.transport_mode === 'walking' ? 'active' : ''}}"
+              bindtap="selectTransport"
+              data-mode="walking">
+          <text>🚶 步行</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-footer">
+    <button class="btn-cancel" bindtap="hideAddParticipant">取消</button>
+    <button class="btn-confirm" bindtap="confirmAddParticipant">确定添加</button>
+  </view>
+</view>
+
+<!-- 添加地点弹窗 -->
+<view class="modal-mask {{showAddPlaceModal ? 'show' : ''}}"
+      wx:if="{{showAddPlaceModal}}"
+      bindtap="hideAddPlace"
+      catchtouchmove="preventTouchMove">
+</view>
+
+<view class="form-modal {{showAddPlaceModal ? 'show' : ''}}"
+      wx:if="{{showAddPlaceModal}}"
+      catchtouchmove="preventTouchMove">
+  <view class="modal-header">
+    <text class="modal-title">添加候选地点</text>
+    <view class="modal-close" bindtap="hideAddPlace">
+      <text class="modal-close-icon">✕</text>
+    </view>
+  </view>
+
+  <view class="modal-body">
+    <view class="form-item">
+      <view class="form-label">地点名称</view>
+      <input class="form-input"
+             placeholder="请输入地点名称"
+             value="{{newPlace.name}}"
+             bindinput="onPlaceNameInput"/>
+    </view>
+
+    <view class="form-item">
+      <view class="form-label">地点位置</view>
+      <view class="form-location" bindtap="choosePlaceLocation">
+        <text class="location-text">{{newPlace.address || '点击选择位置'}}</text>
+        <text class="location-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="form-item" wx:if="{{newPlace.address}}">
+      <view class="form-label">评分（可选）</view>
+      <input class="form-input"
+             type="digit"
+             placeholder="1-5分"
+             value="{{newPlace.rating}}"
+             bindinput="onPlaceRatingInput"/>
+    </view>
+  </view>
+
+  <view class="modal-footer">
+    <button class="btn-cancel" bindtap="hideAddPlace">取消</button>
+    <button class="btn-confirm" bindtap="confirmAddPlace">确定添加</button>
   </view>
 </view>

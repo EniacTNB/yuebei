@@ -1,7 +1,7 @@
 // app.js
 App({
   globalData: {
-    baseUrl: 'http://localhost:3000/api', // 开发环境
+    baseUrl: 'http://localhost:8000/api', // 开发环境
     // baseUrl: 'https://api.yuebei.com/api', // 生产环境
     mapKey: '', // 腾讯地图key
     currentGathering: null,

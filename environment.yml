@@ -1,0 +1,55 @@
+# 约呗 (YueBei) Conda 环境配置文件
+# =====================================
+#
+# 使用方法:
+#   conda env create -f environment.yml
+#   conda activate yuebei
+#
+# 更新环境:
+#   conda env update -f environment.yml --prune
+
+name: yuebei
+
+channels:
+  - conda-forge
+
+dependencies:
+  # Python 基础环境
+  - python=3.11
+  - pip
+
+  # 使用 pip 安装所有 Python 包（更可靠）
+  - pip:
+      # FastAPI 核心
+      - fastapi==0.104.1
+      - uvicorn[standard]==0.24.0
+      - python-multipart==0.0.6
+
+      # 数据库
+      - pymongo==4.5.0
+      - redis==5.0.1
+      - motor==3.3.2
+
+      # 数据验证
+      - pydantic==2.5.0
+      - pydantic-settings==2.0.3
+
+      # 工具库
+      - python-dotenv==1.0.0
+      - httpx==0.25.1
+      - geopy==2.4.0
+      - numpy==1.24.3
+
+      # WebSocket
+      - python-socketio==5.10.0
+
+      # 安全
+      - python-jose[cryptography]==3.3.0
+      - passlib[bcrypt]==1.7.4
+
+      # CORS
+      - fastapi-cors==0.0.6
+
+      # 开发工具
+      - pytest==7.4.3
+      - pytest-asyncio==0.21.1

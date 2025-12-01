@@ -1,10 +1,12 @@
 """
 核心推荐算法
 """
+import traceback
+import sys
 import numpy as np
 from typing import List, Dict, Tuple
 from geopy.distance import geodesic
-from models.gathering import Location, Participant, RecommendationItem
+from models.gathering import Location, Participant, RecommendationItem, ParticipantDistance
 import logging
 
 logger = logging.getLogger(__name__)
@@ -66,15 +68,34 @@ class RecommendationEngine:
         return (center_lat, center_lng)
     
     @staticmethod
+    def calculate_distance(from_location: Location, to_location: Location) -> float:
+        """
+        计算两点之间的直线距离
+
+        Args:
+            from_location: 起点
+            to_location: 终点
+
+        Returns:
+            距离（公里）
+        """
+        distance_km = geodesic(
+            (from_location.lat, from_location.lng),
+            (to_location.lat, to_location.lng)
+        ).kilometers
+
+        return round(distance_km, 1)
+
+    @staticmethod
     def calculate_travel_time(from_location: Location, to_location: Location, transport: str = "driving") -> float:
         """
         估算通勤时间（简化版本，实际应调用地图API）
-        
+
         Args:
             from_location: 起点
             to_location: 终点
             transport: 交通方式
-            
+
         Returns:
             预估时间（分钟）
         """
@@ -83,7 +104,7 @@ class RecommendationEngine:
             (from_location.lat, from_location.lng),
             (to_location.lat, to_location.lng)
         ).kilometers
-        
+
         # 根据交通方式估算速度（km/h）
         speed_map = {
             "driving": 30,  # 城市驾车平均速度
@@ -91,12 +112,12 @@ class RecommendationEngine:
             "walking": 5,   # 步行速度
             "cycling": 15   # 骑行速度
         }
-        
+
         speed = speed_map.get(transport, 25)
-        
+
         # 添加一些随机因素模拟实际路况（实际应该调用地图API）
         time_minutes = (distance_km / speed) * 60 * 1.3  # 1.3是经验系数
-        
+
         return round(time_minutes, 1)
     
     @staticmethod
@@ -135,52 +156,71 @@ class RecommendationEngine:
     ) -> Dict:
         """
         为单个地点打分
-        
+
         Args:
             location: 地点位置
             participants: 参与者列表
             rating: 地点评分（可选）
             price_level: 价格水平（可选）
-            
+
         Returns:
             评分结果字典
         """
-        # 计算每个人到该地点的通勤时间
+        # 计算每个人到该地点的通勤时间和距离
         travel_times = {}
         travel_time_list = []
-        
+        participant_distances = []
+
         for p in participants:
             if p.location:
+                # 计算通勤时间
                 time = RecommendationEngine.calculate_travel_time(
-                    p.location, 
-                    location, 
+                    p.location,
+                    location,
                     p.transport or "driving"
                 )
                 travel_times[p.temp_id] = time
                 travel_time_list.append(time)
-        
+
+                # 计算距离
+                distance = RecommendationEngine.calculate_distance(
+                    p.location,
+                    location
+                )
+
+                # 构建参与者距离信息
+                participant_distances.append(
+                    ParticipantDistance(
+                        temp_id=p.temp_id,
+                        nickname=p.nickname or "匿名",
+                        distance=distance,
+                        travel_time=time,
+                        transport_mode=p.transport or "driving"
+                    )
+                )
+
         # 计算平均通勤时间
         avg_travel_time = np.mean(travel_time_list) if travel_time_list else 0
-        
+
         # 计算公平性得分
         fairness_score = RecommendationEngine.calculate_fairness_score(travel_time_list)
-        
+
         # 计算综合得分
         score_components = {
             "fairness": fairness_score * 0.4,  # 公平性权重40%
             "time": max(0, 100 - avg_travel_time) * 0.3,  # 时间权重30%
         }
-        
+
         # 如果有评分，加入评分因素
         if rating:
             score_components["rating"] = (rating / 5) * 100 * 0.2  # 评分权重20%
-        
+
         # 如果有价格，加入价格因素（价格越低得分越高）
         if price_level:
             score_components["price"] = max(0, 100 - price_level * 20) * 0.1  # 价格权重10%
-        
+
         total_score = sum(score_components.values())
-        
+
         # 计算到中心点的距离
         center_point = RecommendationEngine.calculate_center_point(participants)
         if center_point:
@@ -190,7 +230,7 @@ class RecommendationEngine:
             ).meters
         else:
             distance_from_center = 0
-        
+
         return {
             "location": location,
             "travel_times": travel_times,
@@ -198,7 +238,8 @@ class RecommendationEngine:
             "fairness_score": fairness_score,
             "total_score": round(total_score, 2),
             "distance_from_center": round(distance_from_center, 1),
-            "score_components": score_components
+            "score_components": score_components,
+            "participant_distances": participant_distances
         }
     
     @staticmethod
@@ -218,44 +259,52 @@ class RecommendationEngine:
         Returns:
             推荐地点列表
         """
+        print(participants)
+        print(candidate_locations)
         if not participants or not candidate_locations:
             return []
         
         # 为每个候选地点打分
         scored_locations = []
-        for candidate in candidate_locations:
-            location = Location(
-                address=candidate.get("address", ""),
-                lng=candidate["lng"],
-                lat=candidate["lat"],
-                name=candidate.get("name", "")
-            )
-            
-            score_result = RecommendationEngine.score_location(
-                location=location,
-                participants=participants,
-                rating=candidate.get("rating"),
-                price_level=candidate.get("price_level")
-            )
-            
-            # 创建推荐项
-            recommendation = RecommendationItem(
-                id=candidate.get("id", ""),
-                name=candidate.get("name", "未知地点"),
-                address=candidate.get("address", ""),
-                location=location,
-                type=candidate.get("type", "restaurant"),
-                rating=candidate.get("rating"),
-                price_level=candidate.get("price_level"),
-                avg_travel_time=score_result["avg_travel_time"],
-                travel_times=score_result["travel_times"],
-                score=score_result["total_score"],
-                distance_from_center=score_result["distance_from_center"]
-            )
-            
-            scored_locations.append(recommendation)
+        try:
+            pass
+            for candidate in candidate_locations:
+                location = Location(
+                    address=candidate.get("address", ""),
+                    lng=candidate["lng"],
+                    lat=candidate["lat"],
+                    name=candidate.get("name", "")
+                )
+                
+                score_result = RecommendationEngine.score_location(
+                    location=location,
+                    participants=participants,
+                    rating=candidate.get("rating"),
+                    price_level=candidate.get("price_level")
+                )
+                
+                # 创建推荐项
+                recommendation = RecommendationItem(
+                    id=candidate.get("id", ""),
+                    name=candidate.get("name", "未知地点"),
+                    address=candidate.get("address", ""),
+                    location=location,
+                    type=candidate.get("type", "restaurant"),
+                    rating=candidate.get("rating"),
+                    price_level=candidate.get("price_level"),
+                    avg_travel_time=score_result["avg_travel_time"],
+                    travel_times=score_result["travel_times"],
+                    score=score_result["total_score"],
+                    distance_from_center=score_result["distance_from_center"],
+                    participant_distances=score_result["participant_distances"]
+                )
+
+                scored_locations.append(recommendation)
         
-        # 按得分排序
+
+        except Exception as e:
+            traceback.print_exc()
+                # 按得分排序
         scored_locations.sort(key=lambda x: x.score, reverse=True)
         
         # 返回前N个结果

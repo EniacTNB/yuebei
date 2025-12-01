@@ -31,39 +31,116 @@
     </view>
   </view>
   
-  <!-- 最近的聚会（本地缓存） -->
-  <view class="recent-section" wx:if="{{recentGatherings.length > 0}}">
-    <view class="section-title">最近的聚会</view>
+  <!-- 悬浮操作按钮组 -->
+  <view class="floating-buttons">
+    <!-- 最近的聚会触发按钮 -->
+    <view class="float-btn recent-btn" wx:if="{{recentGatherings.length > 0}}" bindtap="openRecentModal">
+      <text class="float-btn-icon">📋</text>
+      <text class="float-btn-badge" wx:if="{{recentGatherings.length > 0}}">{{recentGatherings.length}}</text>
+    </view>
+
+    <!-- 使用说明触发按钮 -->
+    <view class="float-btn help-btn" bindtap="openHelpModal">
+      <text class="float-btn-icon">❓</text>
+    </view>
+  </view>
+</view>
+
+<!-- 最近的聚会弹窗遮罩层 -->
+<view class="modal-mask {{showRecentModal ? 'show' : ''}}"
+      wx:if="{{showRecentModal}}"
+      bindtap="closeRecentModal"
+      catchtouchmove="preventTouchMove">
+</view>
+
+<!-- 最近的聚会半屏弹窗 -->
+<view class="half-modal {{showRecentModal ? 'show' : ''}}"
+      wx:if="{{showRecentModal}}"
+      catchtouchmove="preventTouchMove">
+  <!-- 拖动条指示器 -->
+  <view class="modal-drag-bar"></view>
+
+  <!-- 关闭按钮 -->
+  <view class="modal-close" bindtap="closeRecentModal">
+    <text class="modal-close-icon">✕</text>
+  </view>
+
+  <!-- 标题 -->
+  <view class="modal-title">最近的聚会</view>
+
+  <!-- 内容 -->
+  <view class="modal-content">
     <view class="recent-list">
-      <view class="recent-item card" wx:for="{{recentGatherings}}" wx:key="id" bindtap="handleRejoin" data-id="{{item.id}}">
+      <view class="recent-item" wx:for="{{recentGatherings}}" wx:key="id" bindtap="handleRejoin" data-id="{{item.id}}">
         <view class="recent-header">
-          <text class="recent-type">{{item.typeText}}</text>
+          <view class="recent-type-badge">{{item.typeText}}</view>
           <text class="recent-time">{{item.timeText}}</text>
         </view>
+        <view class="recent-code">
+          <text class="recent-code-label">邀请码:</text>
+          <text class="recent-code-value">{{item.code}}</text>
+        </view>
         <view class="recent-info">
-          <text class="recent-members">{{item.memberCount}}人已加入</text>
-          <text class="recent-status">{{item.statusText}}</text>
+          <text class="recent-members">👥 {{item.memberCount}}人已加入</text>
+          <text class="recent-status" wx:if="{{item.statusText}}">{{item.statusText}}</text>
         </view>
       </view>
     </view>
   </view>
-  
-  <!-- 使用说明 -->
-  <view class="tips-section">
-    <view class="tips-title">如何使用？</view>
-    <view class="tips-list">
-      <view class="tips-item">
-        <text class="tips-num">1</text>
-        <text class="tips-text">发起聚会，选择您的位置</text>
+</view>
+
+<!-- 半屏弹窗遮罩层 -->
+<view class="modal-mask {{showHelpModal ? 'show' : ''}}"
+      wx:if="{{showHelpModal}}"
+      bindtap="closeHelpModal"
+      catchtouchmove="preventTouchMove">
+</view>
+
+<!-- 半屏弹窗 -->
+<view class="half-modal {{showHelpModal ? 'show' : ''}}"
+      wx:if="{{showHelpModal}}"
+      catchtouchmove="preventTouchMove">
+  <!-- 拖动条指示器 -->
+  <view class="modal-drag-bar"></view>
+
+  <!-- 关闭按钮 -->
+  <view class="modal-close" bindtap="closeHelpModal">
+    <text class="modal-close-icon">✕</text>
+  </view>
+
+  <!-- 标题 -->
+  <view class="modal-title">如何使用约呗</view>
+
+  <!-- 内容 -->
+  <view class="modal-content">
+    <view class="modal-tips-list">
+      <view class="modal-tips-item">
+        <view class="modal-tips-num">1</view>
+        <view class="modal-tips-text">
+          <view class="modal-tips-text-title">发起聚会</view>
+          <view class="modal-tips-text-desc">选择聚会类型，设置您的位置</view>
+        </view>
       </view>
-      <view class="tips-item">
-        <text class="tips-num">2</text>
-        <text class="tips-text">分享给朋友，收集大家位置</text>
+      <view class="modal-tips-item">
+        <view class="modal-tips-num">2</view>
+        <view class="modal-tips-text">
+          <view class="modal-tips-text-title">邀请朋友</view>
+          <view class="modal-tips-text-desc">分享邀请码，收集大家的位置</view>
+        </view>
       </view>
-      <view class="tips-item">
-        <text class="tips-num">3</text>
-        <text class="tips-text">智能推荐最方便的地点</text>
+      <view class="modal-tips-item">
+        <view class="modal-tips-num">3</view>
+        <view class="modal-tips-text">
+          <view class="modal-tips-text-title">查看推荐</view>
+          <view class="modal-tips-text-desc">系统智能推荐最方便的聚会地点</view>
+        </view>
       </view>
+    </view>
+
+    <!-- 额外提示 -->
+    <view class="modal-extra-tips">
+      <text class="modal-extra-tips-icon">💡</text>
+      <text class="modal-extra-tips-text">无需注册，聚会数据24小时后自动过期</text>
     </view>
   </view>
 </view>

@@ -3,7 +3,7 @@
 """
 from fastapi import APIRouter, HTTPException
 from typing import List, Optional
-from models.gathering import Participant, Location, RecommendationItem
+from models.gathering import Participant, Location, RecommendationItem, ParticipantDistance
 from core.algorithm import RecommendationEngine
 from services.map_service import get_map_service
 from app.database import get_mongodb
@@ -20,6 +20,10 @@ async def calculate_recommendations(
     """
     计算推荐地点
     """
+    #  print("This is Calculating")
+    print("========>Gathering Code  "+gathering_code);
+    print("========>preferences: ")
+    print(preferences)
     try:
         # 获取聚会信息
         db = get_mongodb()
@@ -62,6 +66,8 @@ async def calculate_recommendations(
             keyword=keyword,
             radius=3000
         )
+        print("=================>candidate_places:")
+        print(candidate_places)
         
         # 使用推荐引擎计算
         recommendations = RecommendationEngine.recommend_locations(
@@ -98,6 +104,7 @@ async def calculate_recommendations(
         raise
     except Exception as e:
         logger.error(f"Failed to calculate recommendations: {e}")
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/mock/{gathering_code}")
@@ -126,7 +133,30 @@ async def get_mock_recommendations(gathering_code: str):
                     "user_3": 26.5
                 },
                 score=85.5,
-                distance_from_center=1200.0
+                distance_from_center=1200.0,
+                participant_distances=[
+                    ParticipantDistance(
+                        temp_id="user_1",
+                        nickname="张三",
+                        distance=2.5,
+                        travel_time=20.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_2",
+                        nickname="李四",
+                        distance=4.2,
+                        travel_time=30.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_3",
+                        nickname="王五",
+                        distance=3.1,
+                        travel_time=26.5,
+                        transport_mode="transit"
+                    )
+                ]
             ),
             RecommendationItem(
                 id="rec_2",
@@ -147,7 +177,30 @@ async def get_mock_recommendations(gathering_code: str):
                     "user_3": 23.0
                 },
                 score=83.2,
-                distance_from_center=800.0
+                distance_from_center=800.0,
+                participant_distances=[
+                    ParticipantDistance(
+                        temp_id="user_1",
+                        nickname="张三",
+                        distance=2.1,
+                        travel_time=18.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_2",
+                        nickname="李四",
+                        distance=3.5,
+                        travel_time=25.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_3",
+                        nickname="王五",
+                        distance=2.8,
+                        travel_time=23.0,
+                        transport_mode="transit"
+                    )
+                ]
             ),
             RecommendationItem(
                 id="rec_3",
@@ -168,16 +221,39 @@ async def get_mock_recommendations(gathering_code: str):
                     "user_3": 27.0
                 },
                 score=78.8,
-                distance_from_center=1500.0
+                distance_from_center=1500.0,
+                participant_distances=[
+                    ParticipantDistance(
+                        temp_id="user_1",
+                        nickname="张三",
+                        distance=3.2,
+                        travel_time=25.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_2",
+                        nickname="李四",
+                        distance=4.8,
+                        travel_time=32.0,
+                        transport_mode="driving"
+                    ),
+                    ParticipantDistance(
+                        temp_id="user_3",
+                        nickname="王五",
+                        distance=3.6,
+                        travel_time=27.0,
+                        transport_mode="transit"
+                    )
+                ]
             )
         ]
-        
+
         return {
             "success": True,
             "data": mock_recommendations,
             "message": "这是模拟数据"
         }
-        
+
     except Exception as e:
         logger.error(f"Failed to get mock recommendations: {e}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -78,22 +78,33 @@
 /* 参与者列表 */
 .participant-scroll {
   margin-bottom: 40rpx;
+  width: 100%;
+  white-space: nowrap;
 }
 
 .participant-list-h {
-  display: flex;
+  display: inline-flex;
   gap: 20rpx;
   padding-bottom: 10rpx;
+  padding-right: 30rpx;
 }
 
 .participant-card {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 16rpx;
   background: #fff;
   padding: 20rpx 24rpx;
   border-radius: 16rpx;
-  min-width: 180rpx;
+  min-width: 260rpx;
+  max-width: 400rpx;
+  flex-shrink: 0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+}
+
+.participant-card:active {
+  transform: scale(0.98);
 }
 
 .participant-avatar {
@@ -107,22 +118,33 @@
   justify-content: center;
   font-size: 28rpx;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .participant-info {
   display: flex;
   flex-direction: column;
   gap: 4rpx;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .participant-name {
   font-size: 28rpx;
   color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .participant-addr {
   font-size: 24rpx;
   color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* 推荐列表 */
@@ -204,6 +226,84 @@
   font-weight: 500;
 }
 
+/* 参与者距离信息 */
+.participant-distances {
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+  border-radius: 12rpx;
+  border: 1rpx solid #BAE6FD;
+}
+
+.distances-title {
+  font-size: 26rpx;
+  color: #0369A1;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+  padding-left: 4rpx;
+}
+
+.distances-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.distances-list {
+  display: inline-flex;
+  gap: 16rpx;
+}
+
+.distance-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+  background: #fff;
+  padding: 12rpx 16rpx;
+  border-radius: 30rpx;
+  flex-shrink: 0;
+  box-shadow: 0 2rpx 4rpx rgba(3, 105, 161, 0.1);
+  min-width: 180rpx;
+}
+
+.distance-avatar {
+  width: 44rpx;
+  height: 44rpx;
+  background: linear-gradient(135deg, #0EA5E9 0%, #0284C7 100%);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22rpx;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.distance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.distance-name {
+  font-size: 26rpx;
+  color: #0C4A6E;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.distance-value {
+  font-size: 22rpx;
+  color: #0369A1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .recommend-actions {
   display: flex;
   justify-content: flex-end;
@@ -216,6 +316,107 @@
   color: #fff;
   border-radius: 30rpx;
   font-size: 28rpx;
+}
+
+/* 单人模式邀请横幅 */
+.invite-banner {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  background: linear-gradient(135deg, #FFF4E6 0%, #FFE8CC 100%);
+  padding: 32rpx;
+  border-radius: 20rpx;
+  margin-bottom: 40rpx;
+  border: 2rpx solid #FFD8A8;
+}
+
+.invite-icon {
+  font-size: 60rpx;
+  flex-shrink: 0;
+}
+
+.invite-content {
+  flex: 1;
+}
+
+.invite-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #D97706;
+  margin-bottom: 8rpx;
+}
+
+.invite-text {
+  font-size: 26rpx;
+  color: #92400E;
+  line-height: 1.6;
+}
+
+/* 分节标题副标题 */
+.section-subtitle {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+  font-weight: normal;
+}
+
+/* 附近地点列表 */
+.nearby-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.nearby-item {
+  padding: 28rpx;
+  transition: transform 0.2s;
+}
+
+.nearby-item:active {
+  transform: scale(0.98);
+}
+
+.nearby-header {
+  display: flex;
+  gap: 20rpx;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.nearby-icon {
+  font-size: 48rpx;
+  flex-shrink: 0;
+}
+
+.nearby-content {
+  flex: 1;
+}
+
+.nearby-name {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.nearby-address {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+.nearby-info {
+  display: flex;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.nearby-tag {
+  padding: 8rpx 20rpx;
+  background: #F3F4F6;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  color: #666;
 }
 
 /* 加载和空状态 */
@@ -269,4 +470,285 @@
 .btn-share {
   background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
   color: #fff;
+}
+
+/* ==================== 参与者和地点管理 ==================== */
+
+/* 操作按钮区域 */
+.section-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.btn-add-participant,
+.btn-add-place {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 20rpx;
+  background: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #667eea;
+  border: 1rpx solid #667eea;
+  transition: all 0.2s;
+}
+
+.btn-add-participant:active,
+.btn-add-place:active {
+  background: #667eea;
+  color: #fff;
+}
+
+.btn-icon {
+  font-size: 24rpx;
+}
+
+/* 删除按钮 */
+.participant-delete,
+.recommend-delete {
+  width: 48rpx;
+  height: 48rpx;
+  background: #ff4d4f;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.participant-delete:active,
+.recommend-delete:active {
+  transform: scale(0.9);
+}
+
+.delete-icon {
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+/* 模态框遮罩 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-mask.show {
+  opacity: 1;
+}
+
+/* 表单模态框 */
+.form-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 40rpx 40rpx 0 0;
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-modal.show {
+  transform: translateY(0);
+}
+
+/* 模态框头部 */
+.modal-header {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-close {
+  position: absolute;
+  right: 40rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56rpx;
+  height: 56rpx;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.modal-close:active {
+  background: #e0e0e0;
+}
+
+.modal-close-icon {
+  font-size: 32rpx;
+  color: #666;
+  font-weight: bold;
+}
+
+/* 模态框主体 */
+.modal-body {
+  padding: 40rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* 表单项 */
+.form-item {
+  margin-bottom: 32rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  padding: 0 24rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  color: #333;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  background: #fff;
+  border-color: #667eea;
+}
+
+/* 位置选择器 */
+.form-location {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.form-location:active {
+  background: #e8e8e8;
+}
+
+.location-text {
+  font-size: 30rpx;
+  color: #333;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-arrow {
+  font-size: 40rpx;
+  color: #999;
+  margin-left: 16rpx;
+}
+
+/* 交通方式选择器 */
+.transport-options {
+  display: flex;
+  gap: 16rpx;
+}
+
+.transport-option {
+  flex: 1;
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 12rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.transport-option.active {
+  background: #E8F4FF;
+  border-color: #667eea;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.transport-option:active {
+  transform: scale(0.95);
+}
+
+/* 模态框底部 */
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 40rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.btn-cancel,
+.btn-confirm {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.btn-cancel {
+  background: #fff;
+  color: #666;
+  border: 2rpx solid #e0e0e0;
+}
+
+.btn-cancel:active {
+  opacity: 0.7;
+}
+
+.btn-confirm {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border: none;
+}
+
+.btn-confirm:active {
+  opacity: 0.8;
 }

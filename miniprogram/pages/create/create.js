@@ -165,7 +165,9 @@ Page({
         lng: this.data.myLocation.lng
       }
     }
-    
+    console.log(app.globalData.baseUrl + '/gathering/create')
+    console.log(app.globalData.baseUrl + '/gathering/create')
+    console.log(app.globalData.baseUrl + '/gathering/create')
     wx.request({
       url: app.globalData.baseUrl + '/gathering/create',
       method: 'POST',

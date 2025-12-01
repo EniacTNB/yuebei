@@ -64,6 +64,14 @@ class GatheringResponse(BaseModel):
     data: Optional[Gathering] = None
     message: str = ""
     
+class ParticipantDistance(BaseModel):
+    """参与者距离信息"""
+    temp_id: str  # 参与者临时ID
+    nickname: str  # 参与者昵称
+    distance: float  # 距离（公里），保留1位小数
+    travel_time: float  # 通勤时间（分钟），保留1位小数
+    transport_mode: str  # 交通方式
+
 class RecommendationItem(BaseModel):
     """推荐地点"""
     id: str
@@ -72,8 +80,9 @@ class RecommendationItem(BaseModel):
     location: Location
     type: str  # 地点类型
     rating: Optional[float] = None
-    price_level: Optional[str] = None
+    price_level: Optional[int] = None
     avg_travel_time: float  # 平均通勤时间（分钟）
     travel_times: Dict[str, float]  # 每个人的通勤时间
     score: float  # 综合评分
     distance_from_center: float  # 距离中心点距离（米）
+    participant_distances: Optional[List[ParticipantDistance]] = []  # 各参与者距离信息

@@ -92,31 +92,83 @@
   line-height: 80rpx;
 }
 
-/* 最近的聚会 */
-.recent-section {
-  margin-top: 40rpx;
-}
-
-.section-title {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 20rpx;
-}
-
-.recent-list {
+/* 悬浮按钮组 */
+.floating-buttons {
+  position: fixed;
+  right: 30rpx;
+  bottom: 100rpx;
   display: flex;
   flex-direction: column;
   gap: 20rpx;
+  z-index: 100;
+}
+
+.float-btn {
+  position: relative;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.float-btn:active {
+  transform: scale(0.9);
+}
+
+.float-btn-icon {
+  font-size: 48rpx;
+}
+
+/* 最近聚会按钮 */
+.recent-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.float-btn-badge {
+  position: absolute;
+  top: -8rpx;
+  right: -8rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  padding: 0 8rpx;
+  background: #FF6B6B;
+  color: #fff;
+  font-size: 20rpx;
+  font-weight: bold;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3rpx solid #fff;
+}
+
+/* 帮助按钮 */
+.help-btn {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* 最近的聚会弹窗内列表样式 */
+.recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
 }
 
 .recent-item {
-  padding: 24rpx;
-  transition: transform 0.2s;
+  background: #fff;
+  padding: 32rpx;
+  border-radius: 16rpx;
+  border: 2rpx solid #f0f0f0;
+  transition: all 0.2s;
 }
 
 .recent-item:active {
   transform: scale(0.98);
+  border-color: #667eea;
 }
 
 .recent-header {
@@ -126,15 +178,40 @@
   margin-bottom: 16rpx;
 }
 
-.recent-type {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #333;
+.recent-type-badge {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 600;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
 }
 
 .recent-time {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: #999;
+}
+
+.recent-code {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+  padding: 12rpx 20rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+}
+
+.recent-code-label {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.recent-code-value {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  letter-spacing: 4rpx;
 }
 
 .recent-info {
@@ -144,60 +221,182 @@
 }
 
 .recent-members {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #666;
 }
 
 .recent-status {
-  font-size: 24rpx;
-  padding: 4rpx 16rpx;
-  background: #f0f0f0;
-  color: #666;
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  background: #e8f4ff;
+  color: #0369a1;
   border-radius: 20rpx;
-}
-
-/* 使用说明 */
-.tips-section {
-  margin-top: 60rpx;
-  padding: 40rpx;
-  background: #f9f9f9;
-  border-radius: 20rpx;
-}
-
-.tips-title {
-  font-size: 32rpx;
   font-weight: 500;
-  color: #333;
-  margin-bottom: 30rpx;
 }
 
-.tips-list {
-  display: flex;
-  flex-direction: column;
-  gap: 24rpx;
+/* 半屏弹窗遮罩层 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.tips-item {
+.modal-mask.show {
+  opacity: 1;
+}
+
+/* 半屏弹窗 */
+.half-modal {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 70vh;
+  background: #fff;
+  border-radius: 40rpx 40rpx 0 0;
+  z-index: 1000;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.12);
+}
+
+.half-modal.show {
+  transform: translateY(0);
+}
+
+/* 拖动条指示器 */
+.modal-drag-bar {
+  width: 80rpx;
+  height: 8rpx;
+  background: #e0e0e0;
+  border-radius: 4rpx;
+  margin: 20rpx auto;
+}
+
+/* 关闭按钮 */
+.modal-close {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+  width: 60rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
-  gap: 20rpx;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 50%;
+  z-index: 10;
+  transition: all 0.2s;
 }
 
-.tips-num {
-  width: 48rpx;
-  height: 48rpx;
-  background: linear-gradient(90deg, #FF6B6B 0%, #FF8787 100%);
+.modal-close:active {
+  background: #e0e0e0;
+  transform: scale(0.9);
+}
+
+.modal-close-icon {
+  font-size: 36rpx;
+  color: #666;
+  font-weight: 300;
+}
+
+/* 弹窗标题 */
+.modal-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  padding: 20rpx 80rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 弹窗内容 */
+.modal-content {
+  padding: 0 40rpx 60rpx;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* 提示列表 */
+.modal-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  margin-bottom: 40rpx;
+}
+
+/* 提示项 */
+.modal-tips-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 24rpx;
+  padding: 28rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%);
+  border-radius: 20rpx;
+  border-left: 6rpx solid #667eea;
+  transition: all 0.3s;
+}
+
+.modal-tips-num {
+  flex-shrink: 0;
+  width: 56rpx;
+  height: 56rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26rpx;
+  font-size: 32rpx;
   font-weight: bold;
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.3);
 }
 
-.tips-text {
+.modal-tips-text {
   flex: 1;
-  font-size: 28rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.modal-tips-text-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.modal-tips-text-desc {
+  font-size: 26rpx;
   color: #666;
+  line-height: 1.6;
+}
+
+/* 额外提示 */
+.modal-extra-tips {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+  border-radius: 16rpx;
+  border: 2rpx solid #ffd8a8;
+}
+
+.modal-extra-tips-icon {
+  font-size: 36rpx;
+  flex-shrink: 0;
+}
+
+.modal-extra-tips-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #d97706;
+  line-height: 1.5;
 }
