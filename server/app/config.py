@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     
     # 地图API配置
     TENCENT_MAP_KEY: Optional[str] = None
+    TENCENT_MAP_SK: Optional[str] = None  # 腾讯地图SK密钥（用于签名校验）
     AMAP_KEY: Optional[str] = None
     
     # 业务配置

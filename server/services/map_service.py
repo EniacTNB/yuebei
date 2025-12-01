@@ -6,6 +6,8 @@ from typing import List, Dict, Optional, Tuple
 from app.config import settings
 import logging
 import json
+import hashlib
+from urllib.parse import urlencode
 
 logger = logging.getLogger(__name__)
 
@@ -25,29 +27,68 @@ class MapService:
 
 class TencentMapService(MapService):
     """腾讯地图服务"""
-    
+
     def __init__(self):
         super().__init__()
         self.key = settings.TENCENT_MAP_KEY
+        self.sk = settings.TENCENT_MAP_SK
         self.base_url = "https://apis.map.qq.com"
+
+    def _generate_signature(self, path: str, params: Dict) -> str:
+        """
+        生成腾讯地图API的SK签名
+
+        签名算法:
+        1. 对参数按key进行字典升序排序
+        2. 拼接请求路径和参数: /path?key1=value1&key2=value2&key=KEY
+        3. 在末尾加上SK: /path?key1=value1&key2=value2&key=KEY&SK
+        4. 计算MD5值作为签名
+
+        Args:
+            path: API路径,如 /ws/place/v1/search
+            params: 请求参数字典
+
+        Returns:
+            签名字符串
+        """
+        if not self.sk:
+            return None
+
+        # 1. 对参数按key排序
+        sorted_params = sorted(params.items(), key=lambda x: x[0])
+
+        # 2. 拼接参数字符串
+        param_str = urlencode(sorted_params)
+
+        # 3. 拼接完整字符串: path?params + SK
+        sign_str = f"{path}?{param_str}{self.sk}"
+
+        # 4. 计算MD5
+        signature = hashlib.md5(sign_str.encode('utf-8')).hexdigest()
+
+        logger.debug(f"Sign string: {sign_str}")
+        logger.debug(f"Signature: {signature}")
+
+        return signature
     
     async def search_nearby(self, center: Tuple[float, float], keyword: str = "餐厅", radius: int = 3000) -> List[Dict]:
         """
         搜索附近的餐厅/咖啡厅等
-        
+
         Args:
             center: (纬度, 经度)
             keyword: 搜索关键词
             radius: 搜索半径（米）
-        
+
         Returns:
             地点列表
         """
         if not self.key:
             logger.warning("Tencent Map API key not configured, using mock data")
             return self._get_mock_places(center)
-        
-        url = f"{self.base_url}/ws/place/v1/search"
+
+        path = "/ws/place/v1/search"
+        url = f"{self.base_url}{path}"
         params = {
             "key": self.key,
             "keyword": keyword,
@@ -55,7 +96,12 @@ class TencentMapService(MapService):
             "orderby": "_distance",
             "page_size": 20
         }
-        
+
+        # 如果配置了SK,生成签名
+        if self.sk:
+            signature = self._generate_signature(path, params)
+            params["sig"] = signature
+
         try:
             response = await self.client.get(url, params=params)
             if response.status_code == 200:
@@ -75,21 +121,24 @@ class TencentMapService(MapService):
                             "tel": item.get("tel")
                         })
                     return places
-            logger.error(f"Tencent Map API error: {response.text}")
+                else:
+                    logger.error(f"Tencent Map API error: status={data.get('status')}, message={data.get('message')}")
+            else:
+                logger.error(f"Tencent Map API HTTP error: {response.status_code}, {response.text}")
         except Exception as e:
             logger.error(f"Failed to search nearby places: {e}")
-        
+
         return self._get_mock_places(center)
     
     async def calculate_route(self, from_point: Tuple[float, float], to_point: Tuple[float, float], mode: str = "driving") -> Dict:
         """
         计算路线和通勤时间
-        
+
         Args:
             from_point: 起点 (纬度, 经度)
             to_point: 终点 (纬度, 经度)
             mode: 出行方式 driving/transit/walking/bicycling
-        
+
         Returns:
             路线信息
         """
@@ -100,29 +149,28 @@ class TencentMapService(MapService):
                 "duration": 20,
                 "mode": mode
             }
-        
+
         # 腾讯地图出行方式映射
-        mode_map = {
-            "driving": "driving",
-            "transit": "transit",
-            "walking": "walking",
-            "bicycling": "bicycling"
+        path_map = {
+            "driving": "/ws/direction/v1/driving",
+            "transit": "/ws/direction/v1/transit",
+            "walking": "/ws/direction/v1/walking",
+            "bicycling": "/ws/direction/v1/bicycling"
         }
-        
-        url_map = {
-            "driving": f"{self.base_url}/ws/direction/v1/driving",
-            "transit": f"{self.base_url}/ws/direction/v1/transit",
-            "walking": f"{self.base_url}/ws/direction/v1/walking",
-            "bicycling": f"{self.base_url}/ws/direction/v1/bicycling"
-        }
-        
-        url = url_map.get(mode, url_map["driving"])
+
+        path = path_map.get(mode, path_map["driving"])
+        url = f"{self.base_url}{path}"
         params = {
             "key": self.key,
             "from": f"{from_point[0]},{from_point[1]}",
             "to": f"{to_point[0]},{to_point[1]}"
         }
-        
+
+        # 如果配置了SK,生成签名
+        if self.sk:
+            signature = self._generate_signature(path, params)
+            params["sig"] = signature
+
         try:
             response = await self.client.get(url, params=params)
             if response.status_code == 200:
@@ -136,9 +184,13 @@ class TencentMapService(MapService):
                             "duration": route.get("duration", 0) / 60,  # 转换为分钟
                             "mode": mode
                         }
+                else:
+                    logger.error(f"Tencent Map route API error: status={data.get('status')}, message={data.get('message')}")
+            else:
+                logger.error(f"Tencent Map route API HTTP error: {response.status_code}")
         except Exception as e:
             logger.error(f"Failed to calculate route: {e}")
-        
+
         # 返回估算值
         return {
             "distance": 5000,
